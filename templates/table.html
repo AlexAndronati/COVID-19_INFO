@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Table</title>
+    <style>
+        body {
+            background: url('/static/covid.png');
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+        table {
+          font-family: arial, sans-serif;
+            width:90%;
+            margin-left:5%;
+            margin-right:5%;
+        }
+
+        td, th {
+          border: 1px solid #dddddd;
+          text-align: left;
+          padding: 8px;
+        }
+
+        tr:nth-child(even) {
+          background-color: #dddddd;
+        }
+        tr:nth-child(odd) {
+          background-color:  #cce6ff;
+        }
+        h1 {
+            font-family: comic sans ms, fantasy;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 align="center">Last Days of Humanity</h1>
+    <hr align="center" width="90%" size="10" color="#dddddd" />
+
+    <br>
+
+    <table class="table1">
+        <tr>
+            <th>Country</th>
+            <th>Confirmed Cases</th>
+            <th>Deaths</th>
+        </tr>
+        {% for country in country_list %}
+            <tr>
+                <td>
+                    <form method="POST" action="/country">
+                        <button type="submit" name="country" value = "{{ country }}">{{ country }}</button>
+                    </form >
+                </td>
+                <td> ?</td>
+                <td> ?</td>
+            </tr>
+        {% endfor %}
+
+    </table>
+
+</body>
+</html>
