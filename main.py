@@ -5,7 +5,7 @@ import json
 
 from data_worker import DataWorker
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, url_for
 from flask import send_file
 
 app = Flask(__name__)
@@ -16,13 +16,14 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 @app.route("/", methods=["GET", "POST"])
 def foo2(data=None):
-    country_list = DataWorker.get_country_list()
+    country_table = DataWorker.get_country_table()
+    DataWorker.get_global_plot()
     # if country_list is not None:
     #     app.logger.info('Country list uploaded succesfully')
     # else:
     #     app.logger.info('Failed uploading Country list')
 
-    return render_template("table.html", data=data, country_list=country_list)
+    return render_template("table.html", data=data, country_table=country_table)
 
 
 @app.route("/country", methods=["GET", "POST"])
@@ -34,10 +35,6 @@ def country(ctr=None):
         df = DataWorker.get_table(ctr)
 
         bytes_obj = DataWorker.create_plot(ctr)
-
-        # send_file(bytes_obj,
-        #           attachment_filename='plot.png',
-        #           mimetype='image/png')
 
         return render_template("country_data.html", df_country=df, country=ctr)
 
@@ -57,6 +54,5 @@ def page_not_found(error):
 
 
 if __name__ == '__main__':
-    print(1)
     app.run()
 
