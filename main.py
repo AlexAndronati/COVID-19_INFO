@@ -1,58 +1,38 @@
 import random
 import string
 import json
-# import logging
+import logging
+import time
+
+# import daemon
+from logging.handlers import RotatingFileHandler
 
 from data_worker import DataWorker
 
-from flask import Flask, render_template, request, url_for
-from flask import send_file
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
+
 # logging.basicConfig(filename='logs/countries.log', level=logging.DEBUG)
 
-
-@app.route("/", methods=["GET", "POST"])
-def foo2(data=None):
-    country_table = DataWorker.get_country_table()
-    DataWorker.get_global_plot()
-    # if country_list is not None:
-    #     app.logger.info('Country list uploaded succesfully')
-    # else:
-    #     app.logger.info('Failed uploading Country list')
-
-    return render_template("table.html", data=data, country_table=country_table)
-
-
-@app.route("/country", methods=["GET", "POST"])
-def country(ctr=None):
-
-    if request.method == "POST":
-        ctr = request.form["country"]  # ctr - chosen country
-
-        df = DataWorker.get_table(ctr)
-
-        bytes_obj = DataWorker.create_plot(ctr)
-
-        return render_template("country_data.html", df_country=df, country=ctr)
-
-    return ":("
-
-
-@app.after_request
-def add_header(r):
-    r.headers["Cache-Control"] = "no-store"
-    r.headers['Cache-Control'] = 'public, max-age=0'
-    return r
-
-
-@app.errorhandler(404)
-def page_not_found(error):
-    return "ooops", error
+def init_app_logger():
+    handler = RotatingFileHandler(
+        'logs/countries.log', maxBytes=10_000, backupCount=1)
+    handler.setLevel(logging.DEBUG)
+    file_formatter = logging.Formatter(
+        '[%(asctime)s] p%(process)s {%(pathname)s:%(lineno)d} '
+        '%(levelname)s - %(message)s'
+    )
+    handler.setFormatter(file_formatter)
+    app.logger.addHandler(handler)
+    app.logger.setLevel(logging.DEBUG)
 
 
 if __name__ == '__main__':
+    init_app_logger()
+    with app.app_context():
+        import routes
     app.run()
 

@@ -2,10 +2,11 @@
 import pandas as pd
 from sqlalchemy import create_engine
 import numpy as np
+from settings import DB_URL, API_URL_ALL, DB_NAME
 import psycopg2
 
 
-df = pd.read_json('https://api.covid19api.com/all')
+df = pd.read_json(API_URL_ALL)
 df.drop(columns=["Lat", "Lon", "CountryCode", "CityCode"], inplace=True)
 df.rename(columns={"Province": "Province_State", 'Confirmed': 'ConfirmedCases', 'Deaths': 'Fatalities',
                    'Country': 'Country_Region'}, inplace=True)
@@ -13,10 +14,10 @@ df.index.name = 'Id'
 df = df.replace(r'^\s*$', np.nan, regex=True)
 
 df['Date'] = df['Date'].dt.date
-try:
-    df['Date'] = df['Date'].dt.date
-except Exception:
-    pass
+# try:
+#     df['Date'] = df['Date'].dt.date
+# except Exception:
+#     pass
 
 # group_country = df.groupby(by="Country_Region")
 # print(df)
@@ -71,8 +72,8 @@ df_final.sort_values(by=["Country_Region", "Date"], inplace=True)
 df = df_final
 
 
-engine = create_engine('postgresql+psycopg2://postgres:admin@127.0.0.1:5433/covid')
-df.to_sql('covid', engine, if_exists='replace')
+engine = create_engine(DB_URL)
+df.to_sql(DB_NAME, engine, if_exists='replace')
 
 
 
