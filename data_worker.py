@@ -1,18 +1,14 @@
 import pandas as pd
 import numpy as np
-import io
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-
-from flask import Flask
-from sqlalchemy import create_engine
-from os import path
 import os
+from os import path
 from settings import DB_URL, DB_NAME
-
 from sqlalchemy import create_engine
 from scipy import optimize
+
 
 class DataWorker:
     engine = create_engine(DB_URL)
